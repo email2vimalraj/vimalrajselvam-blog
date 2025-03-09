@@ -60,7 +60,7 @@ The value should be the config XML file path.
 
 ### Adding System Information
 
-In case you want to add system information, you will have to implement an interface _com.vimalselvam.testng.SystemInfo_. This interface contains a method with return type as _Map<String, String>_. Construct your system information with the map and return that map. After you have implemented, the custom implementation should be referred in your TestNG Suite xml as a parameter at the suite level.
+In case you want to add system information, you will have to implement an interface _com.vimalselvam.testng.SystemInfo_. This interface contains a method with return type as `Map<String, String>`. Construct your system information with the map and return that map. After you have implemented, the custom implementation should be referred in your TestNG Suite xml as a parameter at the suite level.
 
 For instance add the following parameter at your suite level in the TestNG suite xml:
 
