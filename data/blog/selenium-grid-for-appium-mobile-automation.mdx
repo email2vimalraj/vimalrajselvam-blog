@@ -16,7 +16,7 @@ Often we wanted to perform mobile execution in parallel. The best way of perform
 
 ## Setup the selenium grid
 
-Place the downloaded selenium standalone server jar in some directory. In my case I've placed in /Users/{username}/Tools/selenium.
+Place the downloaded selenium standalone server jar in some directory. In my case I've placed in /Users/username/Tools/selenium.
 
 Open your terminal and navigate to the directory to where you placed the jar file and execute the following command:
 
@@ -101,7 +101,7 @@ Do the same for another device. In my case, the node json for samsung S5 device 
 Changed the applicationName, browserName and port of appium node, and saved the file as **node_s5.json**. Now start your 2nd appium node in another terminal like this:
 
 ```bash
-appium --nodeconfig /Users/{username}/Tools/selenium/node_s5.json -p 4730 -bp 4731 -U {s5 device id}
+appium --nodeconfig /Users/username/Tools/selenium/node_s5.json -p 4730 -bp 4731 -U {s5 device id}
 ```
 
 Refresh your browser and you should see this in your grid console page:
