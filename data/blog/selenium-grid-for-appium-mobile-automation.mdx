@@ -64,7 +64,7 @@ Here **applicationName** is mandatory since the grid identifies to which appium
 Now let's start our appium node with this node config. In your terminal, start your appium like this:
 
 ```bash
-appium --nodeconfig /Users/{username}/Tools/selenium/node_s4.json -p 4723 -bp 4724 -U {s4 device id}
+appium --nodeconfig /Users/username/Tools/selenium/node_s4.json -p 4723 -bp 4724 -U {s4 device id}
 ```
 
 This will start the appium server on the port 4723 and the bootstrap port 4724 (remember, the bootstrap port is mandatory for android devices) and with the device id of your device which you can get from **adb devices**.
