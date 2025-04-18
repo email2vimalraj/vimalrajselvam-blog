@@ -7,20 +7,16 @@ interface Project {
 
 const projectsData: Project[] = [
   {
-    title: 'A Search Engine',
-    description: `What if you could look up any information in the world? Webpages, images, videos
-    and more. Google has many features to help you find exactly what you're looking
-    for.`,
-    imgSrc: '/static/images/google.png',
-    href: 'https://www.google.com',
+    title: 'Cucumber Extent Reporter',
+    description: `Cucumber Extent Reporter is a plug-in for integrating ExtentReports with Cucumber-JVM. It generates detailed and customizable HTML reports based on Cucumber test execution.`,
+    // imgSrc: '/static/images/google.png',
+    href: 'https://github.com/email2vimalraj/CucumberExtentReporter',
   },
   {
-    title: 'The Time Machine',
-    description: `Imagine being able to travel back in time or to the future. Simple turn the knob
-    to the desired date and press "Go". No more worrying about lost keys or
-    forgotten headphones with this simple yet affordable solution.`,
-    imgSrc: '/static/images/time-machine.jpg',
-    href: '/blog/the-time-machine',
+    title: 'TestNG Extents Report',
+    description: `TestNGExtentsReport functions as a TestNG listener, capturing test execution details and producing comprehensive reports. It supports features like embedding screenshots, adding custom logs, and including system information.`,
+    // imgSrc: '/static/images/time-machine.jpg',
+    href: 'https://github.com/email2vimalraj/TestNGExtentsReport',
   },
 ]
 
