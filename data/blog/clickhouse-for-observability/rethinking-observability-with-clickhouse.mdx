@@ -1,0 +1,95 @@
+---
+title: 'Rethinking Observability: Why Clickhouse is the Future of Scalable Observability?'
+date: 2025-04-18
+tags: ['clickhouse', 'observability', 'logs', 'metrics', 'traces']
+draft: false
+summary: Learn how ClickHouse can power a scalable, cost-efficient observability stack. This post explores the basics, pitfalls of legacy tools, and ClickHouse's advantages.
+---
+
+![Why Observability Matters](/static/images/clickhouse/clickhouse-why-observability-matters.png)
+
+## 1. Introduction
+
+In today’s landscape of microservices, containers, and distributed systems, observability is no longer optional—it's essential for maintaining system reliability, performance, and security. However, traditional observability platforms often fail to scale efficiently, becoming bottlenecks due to high cost, limited flexibility, or performance issues at scale.
+
+This blog series explores how **ClickHouse**, a high-performance columnar database, can serve as the backbone for a scalable, cost-efficient observability platform. In this first post, we’ll cover the fundamentals: what observability means, why existing solutions fall short, and how ClickHouse addresses these limitations.
+
+---
+
+## 2. What is Observability?
+
+Observability refers to the ability to understand the internal state of a system based on the data it emits. While often confused with monitoring, observability goes beyond detecting issues—it helps explain _why_ they happen.
+
+The three core pillars of observability:
+
+- **Logs**: Unstructured or semi-structured event data emitted by applications and infrastructure
+- **Metrics**: Numeric time-series data, typically representing performance indicators
+- **Traces**: Distributed tracking of requests across service boundaries
+
+Together, these data types enable root cause analysis, anomaly detection, and system optimization.
+
+---
+
+## 3. Challenges with Traditional Observability Platforms
+
+As observability data grows, many enterprises hit limitations with traditional tools:
+
+- **Scale bottlenecks**: Difficulty processing terabytes of logs/day
+- **High licensing costs**: Usage-based billing becomes prohibitive
+- **Vendor lock-in**: Closed systems limit flexibility and integration
+- **Query latency**: Slow performance when querying high-cardinality datasets
+- **Rigid schemas**: Limited support for semi-structured or evolving formats
+
+These challenges drive the need for an open, scalable, and efficient solution.
+
+---
+
+## 4. Why ClickHouse for Observability?
+
+| Feature                                 | Benefit                                                      |
+| --------------------------------------- | ------------------------------------------------------------ |
+| **Columnar storage**                    | Efficient querying on specific fields without full row scans |
+| **High compression**                    | Reduces storage footprint using codecs like ZSTD and Delta   |
+| **MPP (Massively Parallel Processing)** | Enables sub-second queries on billions of records            |
+| **Insert-optimized**                    | Handles high write throughput for log ingestion              |
+| **SQL-native**                          | Familiar querying with expressive analytical capabilities    |
+| **Open-source**                         | Avoids license costs and vendor lock-in                      |
+| **Grafana support**                     | Integrates seamlessly with dashboards and alerting systems   |
+
+ClickHouse is not a log storage system by design, but its performance characteristics make it highly suitable for observability workloads.
+
+---
+
+## 5. Key Use Cases with ClickHouse in Observability
+
+- Centralized logging for application and infrastructure logs
+- Security and audit event analysis
+- Developer drilldowns for troubleshooting
+- High-cardinality metric analysis
+- Long-term retention and compliance use cases
+- Cost-effective log storage at petabyte scale
+
+---
+
+## 6. What This Series Will Cover
+
+This blog series is hands-on and focused on practical implementation. Upcoming posts will include:
+
+- Setting up ClickHouse for observability workloads
+- Designing a scalable log ingestion architecture using Fluent Bit, OpenTelemetry, and Kafka
+- Creating log storage schemas optimized for performance and cost
+- Visualizing logs with Grafana
+- Real-world use cases: audit logs, security insights, trend analysis
+- Query optimization and performance tuning
+- Multi-region deployment patterns and DR
+- Clickhouse setup for Production
+
+---
+
+## 7. Conclusion
+
+ClickHouse is redefining what's possible in observability engineering. Whether you're dealing with scale, cost, or vendor constraints, ClickHouse offers a compelling alternative to traditional platforms.
+
+In the next post, we’ll walk through the basics of setting up ClickHouse, tuning it for log workloads, and preparing for scalable ingestion.
+
+Stay tuned.

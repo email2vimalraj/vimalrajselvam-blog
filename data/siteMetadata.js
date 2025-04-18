@@ -14,6 +14,7 @@ const siteMetadata = {
   email: 'email2vimalraj@gmail.com',
   github: 'https://github.com/email2vimalraj',
   x: 'https://x.com/email2vimalraj',
+  xAccountName: '@email2vimalraj',
   // twitter: 'https://twitter.com/Twitter',
   // facebook: 'https://facebook.com',
   youtube: 'https://youtube.comhttps://www.youtube.com/@vimalrajselvam',
