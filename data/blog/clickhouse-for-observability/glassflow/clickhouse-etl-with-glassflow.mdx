@@ -117,8 +117,8 @@ services:
       - '8123:8123'
       - '9000:9000'
     volumes:
-      - ../demos/config/clickhouse/config.d/config.xml:/etc/clickhouse-server/config.d/config.xml
-      - ../demos/config/clickhouse/users.d/users.xml:/etc/clickhouse-server/users.d/users.xml
+      - ../config/clickhouse/config.d/config.xml:/etc/clickhouse-server/config.d/config.xml
+      - ../config/clickhouse/users.d/users.xml:/etc/clickhouse-server/users.d/users.xml
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
@@ -307,6 +307,8 @@ Once you saved the pipeline, then you can head to your ClickHouse play interface
 ![screen 6](/static/images/clickhouse/Glassflow-clickhouse-etl_1/screen6.png)
 
 As you see, it is quite easy to setup and use the UI to select and transform the data as per your need.
+
+All the working e2e configurations are available here - [Part 1](https://github.com/email2vimalraj/glassflow-clickhouse-etl-demo/tree/main/part1)
 
 ## 📌 Final Thoughts
 
