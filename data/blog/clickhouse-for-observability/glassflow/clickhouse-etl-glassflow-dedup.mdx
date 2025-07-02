@@ -1,0 +1,112 @@
+---
+title: 'No-Code Clickhouse ETL with Glassflow - Dedup'
+date: 2025-07-02
+tags:
+  [
+    'clickhouse',
+    'observability',
+    'logs',
+    'metrics',
+    'traces',
+    'kafka',
+    'Glassflow',
+    'otel',
+    'opentelemetry',
+    'fluentbit',
+  ]
+draft: false
+summary: In this post, we explore how to use Glassflow's built-in deduplication fewature to prevent duplicate log events from polluting your ClickHouse database. With a simple update to the Fluent Bit Lua script, we simulate duplicate log entries by reusing the same `counter` value. Galssflow's streaming deduplication logic ensures only the first occurence is written to ClickHouse, based on a configurable time window and deduplication key. This results in cleaner logs, more accurate analysis, and reduced storage usage - all without post-processing or complex query logic.
+---
+
+# 🔁 Part 2: Deduplication in Streaming Logs using Glassflow ClickHouse ETL
+
+In high-scale logging environments, duplicate log entries can flood your analytics pipeline - causing inflated metrics, noisy dashboards, increased storage costs, and query inacuuracies. These duplicates can originate from retries, network glitches, or multi-path log shippers.
+
+**Glassflow's ClickHouse ETL** solves this probem elegantly with built-in real-time streaming deduplication. In our [previous post](./clickhouse-etl-with-glassflow), we explored how Glassflow helps to ingest the logs into ClickHouse without developing / writing code for our Kafka Consumer. In this post, we'll explore how to enable deduplication, simulate duplicate logs in your local setup, and validate the results in ClickHouse.
+
+## ⚙️ Why Deduplication Matters in Logging
+
+Consider the following real-world scenarios:
+
+- A container restarts and replays the last 100 log lines.
+- Fluent Bit or OTel retries sending the same batch due to backpressure.
+- Log sources produce noisy heartbeats that aren't truly unique.
+
+The scenarios lead to multiple copies of the same log entering your database - cluttering dashboards and reports.
+
+## 🧠 How Glassflow Deduplication Works
+
+Glassflow allows you to enable deduplication on a **per-topic basis** with these key features:
+
+- **Field-based uniqueness**: You specify one or more fields (e.g., `msg_id`, `counter`, or `hash`) to act as a deduplication key.
+- **Sliding time window**: Deduplication is stateful, operating within a configurable time window (e.g., 10 minutes, 1 hour, up to 7 days).
+- **Streaming-first**: It filters duplicates _before_ they reach ClickHouse.
+
+This ensures **exact-once** delivery to ClickHouse within the dedup window.
+
+## 🔧 Deduplication in Your Logging Pipeline
+
+Let's say you're using this log schema from Fluent Bit:
+
+```json
+{
+  "timestamp": 1719050000,
+  "counter": 101,
+  "msg": "Test log message #101"
+}
+```
+
+You want to deduplicate logs based on `counter` field. If the same `counter` arrives more than once within a 1-hour window, only the first one should be retained.
+
+### Glassflow Pipeline Configuration
+
+Download the required configurations from [here](https://github.com/email2vimalraj/glassflow-clickhouse-etl-demo/tree/main/part2)
+
+- Run `docker compose up -d` to setup end-to-end pipeline. I have made small change in `counter.lua` script in Fluent Bit setup to produce duplicate events.
+
+- Once the docker compose is up sucessfully, open [http://localhost:8080](http://localhost:8080) in your browser and select `Deduplicate` button from the Welcome screen:
+
+![screen 1](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen1.png)
+
+- Setup Kafka connection details as follows:
+
+![screen 2](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen2.png)
+
+- Select the Kafka topic where the logs are produced:
+
+![screen 3](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen3.png)
+
+- Now it's time to define how we want to deduplicate. In our use case, I'm selecting `counter` as my deduplication key. For demo purpose, I've selected `Deduplication Time Window` as 3 minutes. In real-world it must be in hours:
+
+![screen 4](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen4.png)
+
+- Now setup a ClickHouse connection details. Please remember to create a table schema before doing this.
+
+![screen 5](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen5.png)
+
+- Select the target database and table to where the logs must be ingested at this stage and map the keys to columns accordingly:
+
+![screen 6](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen6.png)
+
+- Finally, your pipeline is active and wait for at least 1 minute or 100 events to be batched as per our configuration to insert into ClickHouse.
+
+![screen 7](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen7.png)
+
+- After few inserts, now you can query from Clickhouse and view the logs:
+
+![screen 8](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen8.png)
+
+As you see in the screenshot, we have logs with counter as 202, 203, 204 and then 206. The reason is in our Lua script, if our counter value is divisable by 5, then we subtract the counter by 1 to produce duplicated log. That is, in this case, we produced a log with counter 204 two times. However, Glassflow detected the duplicated event in 3 minute time window and deduplicated before inserting into ClickHouse.
+
+## 🧵 Wrapping Up
+
+Glassflow's deduplication feature is a practical answer to noisy, high-volume of logs with potential for repetition. In this post, we covered:
+
+- Why deduplication is critical in log pipelines
+- How to enable it in Glassflow
+- How to simulate duplicates using Fluent Bit
+- How to validate the results in ClickHouse
+
+This sets you up for **cleaner dashboards, faster queries, and lower storage cost** - all with minimal config and no custom scripts.
+
+We'll explore the **Join** feature in the next post.
