@@ -1,0 +1,148 @@
+---
+title: 'No-Code Clickhouse ETL with Glassflow - Join'
+date: 2025-07-02
+tags:
+  [
+    'clickhouse',
+    'observability',
+    'logs',
+    'metrics',
+    'traces',
+    'kafka',
+    'Glassflow',
+    'otel',
+    'opentelemetry',
+    'fluentbit',
+  ]
+draft: false
+summary: In this post, we explore how to enrich streaming logs in real time using Glassflow's **join feature**. By joining a primary log stream with a secondary `users` topic on the `user_id` field, we demonstrate how to dynamically add contextual metadata like `username` and `region` to logs before inserting them into ClickHouse.
+---
+
+# 📌 Part 3: Streaming Enrichment with Glassflow's Join Feature
+
+In modern logging pipelines, enriching logs with external data is essential for making them more meaningful and actionable.
+
+We have explored the following features of Glassflow's ClickHouse ETL in our previous posts:
+
+- [Ingestion](./clickhouse-etl-with-glassflow)
+- [Deduplication](./clickhouse-etl-glassflow-dedup)
+
+In this post, with Glassflow's **temporal join** capability, we will explore on how to merge streaming logs with reference data in real-time - prior to ingestion into ClickHouse which helps to safeguard the performance of your ClickHouse cluster from unneccessary joins.
+
+## 🧱 Why Use Join in Log Pipelines?
+
+Log enrichment automates log enhancement with contextual data - think routing info, user metadata, or service names. Traditionally, this is handled post-ingestion via expensive analytical JOINs or offline batch enrichment. Glassflow enables this upstream, giving you enriched log entries in ClickHouse without complex post-processing.
+
+## ⚙️ How Glassflow Stream Join Work
+
+Glassflow supports real-time joining of two Kafka streams:
+
+- **Dual-stream input**: Choose a primary log topic (left) and secondary lookup topic (right).
+- **Join Key**: Define one or more fields to match on (e.g., `user_id` or `counter`).
+- **Time window**: Specify how far back to buffer lookup events (up to 7 days).
+- **Result**: Glassflow correlates log and lookup events within the window, emitting enriched records downstream.
+
+This logic ensures that each log is enriched with matching metadata - before it lands in ClickHouse.
+
+## 🛠️ Example: Enriching Logs with a Lookup Stream
+
+### 🔧 Setup Two Kafka Topics
+
+- **logs**: Contains `timestamp`, `counter`, `msg`, and `user_id`. We will use our existing Fluent Bit to produce the logs by making a small change in our Lua script.
+- **users**: Contains `user_id`, `username`, and `region`. We'll leverage [kcat](https://github.com/edenhill/kcat) CLI utility to produce messages to this topic.
+
+### 🔧 ClickHouse Schema
+
+```sql
+CREATE TABLE IF NOT EXISTS enriched_logs (
+  event_timestamp DateTime,
+  body String,
+  counter Int32,
+  user_id String,
+  username String,
+  region String
+) ENGINE = MergeTree ORDER BY event_timestamp;
+```
+
+For the complete setup, download the docker-compose setup from [here](https://github.com/email2vimalraj/glassflow-clickhouse-etl-demo/tree/main/part3)
+
+### 🔧 Produce users topic
+
+Using `kcat` utility, let's produce some dummy messages:
+
+```bash
+kcat -b localhost:9092 -t users -P
+{"user_id":"user123","username":"Alice","region":"US"}
+{"user_id":"user456","username":"Bob","region":"EU"}
+{"user_id":"user789","username":"Charlie","region":"APAC"}
+```
+
+Press Command + D or ctrl + D to stop producer.
+
+### 🔧 Setup Flow
+
+With the downloaded docker compose, let's start our end-to-end flow by running `docker compose up -d`.
+
+The small change that was done in our Lua script is to produce user_id as follows:
+
+```lua
+new_record["user_id"] = (counter % 3 == 0) and "user123" or "user456"
+```
+
+### 🔧 Configure Glassflow
+
+- Once the docker compose is up sucessfully, open [http://localhost:8080](http://localhost:8080) in your browser and select `Join` button from the Welcome screen:
+
+![screen 1](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen1.png)
+
+- Setup Kafka connection details as follows:
+
+![screen 2](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen2.png)
+
+- Select the Left Kafka topic where the logs are produced:
+
+![screen 3](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen3.png)
+
+- Select the Right Kafka topic where the user details are produced:
+
+![screen 4](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen4.png)
+
+- Now, select the join key, in our case it is `user_id` and the join time window, let's set it as 1 minute:
+
+![screen 5](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen5.png)
+
+- Now setup a ClickHouse connection details. Please remember to create a table schema before doing this.
+
+![screen 6](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen6.png)
+
+- Select the target database and table to where the logs must be ingested at this stage.
+- Map the left / right topic keys to the appropriate column names in ClickHouse.
+
+![screen 7](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen7.png)
+
+- Finally, your pipeline is active and wait for at least 1 minute or 100 events to be batched as per our configuration to insert into ClickHouse.
+
+![screen 8](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen8.png)
+
+- After few inserts, now you can query from Clickhouse and view the enriched logs as follows:
+
+![screen 9](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen9.png)
+
+## 🔍 Under the Hood
+
+Glassflow maintains buffered state of lookup topics for the join window. On receiving a log, it checks for matching lookup events in the buffer. If found, it enriches the log record before batching to ClickHouse. Late-arriving lookups within the window still get applied.
+
+## 🎯 When to Use Stream Joins
+
+- Real-time user or device enrichment in logs.
+- Dynamic log categorization based on external service metadata.
+- Real-time correlation of service logs with business/user context.
+
+Benefits include:
+
+- Reduced ClickHouse JOINs and improved query performance.
+- Unified enrichment logic at ingestion time.
+
+## 📌 Final Thoughts
+
+Glassflow's streaming JOIN feature bridges the gap between raw logs and enriched analytics. By joining streams upstream, you reduce complexity, improve performance, and enable real-time observability with minimal overhead.
