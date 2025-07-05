@@ -316,7 +316,6 @@ Glassflow’s clickhouse-etl offers a powerful abstraction layer for streaming l
 
 The features are currently limited, however the Glassflow has a very good [roadmap](https://glassflow.notion.site/2081c086bb6d80cca1ebd14d7d5f0781?v=2081c086bb6d80bcbe55000c005c1ef5) lined up to add more features:
 
-- Support for nested json data
 - Support for multiple pipelines (the feature is already in progress)
 - Real-time ingestion view
 - Field transformations / aggregations / filtering through UI
