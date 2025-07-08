@@ -1,0 +1,40 @@
+---
+title: 'Part 2 - Getting Started: Setting Up ClickHouse for Observability'
+date: 2025-07-05
+tags: ['clickhouse', 'observability', 'logs', 'metrics', 'traces']
+draft: false
+summary: Learn how to set up ClickHouse for observability workloads using Docker. This post walks through installation, key configs, and best practices for log ingestion.
+---
+
+## Introduction
+
+In the [previous post](./rethinking-observability-with-clickhouse), we explored why ClickHouse is a powerful choice for observability. Now it's time to get hands-on. This post guides you through setting up ClickHouse from scratch using Docker, with a focus on preparing it for high-throughput log ingestion.
+
+Whether you're experimenting locally or laying the foundation for a multi-node deployment, this setup provides a reliable starting point.
+
+---
+
+## Deployment Options
+
+ClickHouse supports several [deployment options](https://clickhouse.com/docs/install) depending on your environment and goals:
+
+| Method               | Best Use Case                                                                                                                          |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Binary (.tar.gz)** | Bare metal servers with full control                                                                                                   |
+| **Docker**           | Quick local setup and dev testing                                                                                                      |
+| **Kubernetes**       | Scalable production environments from [Altinity Kubernetes Operator](https://altinity.com/kubernetes-operator/)                        |
+| **Cloud Services**   | Fully managed setup via [ClickHouse Cloud](https://clickhouse.com/cloud) or [Altinity.Cloud](https://altinity.com/managed-clickhouse/) |
+
+For this guide, we’ll focus on Docker, which is fast to set up and ideal for development and prototyping.
+
+---
+
+## Running ClickHouse via Docker Compose
+
+ClickHouse has an example repo with various Docker Compose Recipes. For this article, let's use [this simple 1 ClickHouse node and 1 ClickHouse Keeper recipe](https://github.com/ClickHouse/examples/tree/main/docker-compose-recipes/recipes/ch-1S_1K). Follow the instructions from the repository to setup.
+
+Assuming you have a docker setup, once you cloned the repository, just run:
+
+```bash
+docker compose up -d
+```
