@@ -1,6 +1,6 @@
 ---
 title: 'No-Code Clickhouse ETL with Glassflow - Dedup'
-date: 2025-07-01
+date: 2025-07-09
 tags:
   [
     'clickhouse',
@@ -66,35 +66,35 @@ Download the required configurations from [here](https://github.com/email2vimalr
 
 - Once the docker compose is up sucessfully, open [http://localhost:8080](http://localhost:8080) in your browser and select `Deduplicate` button from the Welcome screen:
 
-![screen 1](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen1.png)
+![screen 1](/static/images/clickhouse/glassflow-clickhouse-etl_2/screen1.png)
 
 - Setup Kafka connection details as follows:
 
-![screen 2](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen2.png)
+![screen 2](/static/images/clickhouse/glassflow-clickhouse-etl_2/screen2.png)
 
 - Select the Kafka topic where the logs are produced:
 
-![screen 3](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen3.png)
+![screen 3](/static/images/clickhouse/glassflow-clickhouse-etl_2/screen3.png)
 
 - Now it's time to define how we want to deduplicate. In our use case, I'm selecting `counter` as my deduplication key. For demo purpose, I've selected `Deduplication Time Window` as 3 minutes. In real-world it must be in hours:
 
-![screen 4](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen4.png)
+![screen 4](/static/images/clickhouse/glassflow-clickhouse-etl_2/screen4.png)
 
 - Now setup a ClickHouse connection details. Please remember to create a table schema before doing this.
 
-![screen 5](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen5.png)
+![screen 5](/static/images/clickhouse/glassflow-clickhouse-etl_2/screen5.png)
 
 - Select the target database and table to where the logs must be ingested at this stage and map the keys to columns accordingly:
 
-![screen 6](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen6.png)
+![screen 6](/static/images/clickhouse/glassflow-clickhouse-etl_2/screen6.png)
 
 - Finally, your pipeline is active and wait for at least 1 minute or 100 events to be batched as per our configuration to insert into ClickHouse.
 
-![screen 7](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen7.png)
+![screen 7](/static/images/clickhouse/glassflow-clickhouse-etl_2/screen7.png)
 
 - After few inserts, now you can query from Clickhouse and view the logs:
 
-![screen 8](/static/images/clickhouse/Glassflow-clickhouse-etl_2/screen8.png)
+![screen 8](/static/images/clickhouse/glassflow-clickhouse-etl_2/screen8.png)
 
 As you see in the screenshot, we have logs with counter as 202, 203, 204 and then 206. The reason is in our Lua script, if our counter value is divisable by 5, then we subtract the counter by 1 to produce duplicated log. That is, in this case, we produced a log with counter 204 two times. However, Glassflow detected the duplicated event in 3 minute time window and deduplicated before inserting into ClickHouse.
 
