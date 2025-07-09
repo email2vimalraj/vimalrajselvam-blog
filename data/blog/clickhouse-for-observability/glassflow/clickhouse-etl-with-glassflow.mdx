@@ -282,29 +282,29 @@ This schema expects:
 
 Once the UI is up at [http://localhost:8080](http://localhost:8080), you will be presented with the following nice welcome page:
 
-![screen 1](/static/images/clickhouse/Glassflow-clickhouse-etl_1/screen1.png)
+![screen 1](/static/images/clickhouse/glassflow-clickhouse-etl_1/screen1.png)
 
 Select `Ingest Only` for now. The `Deduplicate` option is very useful when you believe that your logs are duplicated. For my testing, I just use `Ingest Only`, and we can dig into each options in another post.
 
 Now setup the Kafka Connection, we use no authentication option for our local setup, hence select the `No authentication` option (🙏 Thank you for the Glassflow developers for the quick feature addition on this to enable local testing easier).
 
-![screen 2](/static/images/clickhouse/Glassflow-clickhouse-etl_1/screen2.png)
+![screen 2](/static/images/clickhouse/glassflow-clickhouse-etl_1/screen2.png)
 
 Once the Kafka connection is setup, now select the topic where the logs are produced and select the offset either `earliest` or `latest`.
 
-![screen 3](/static/images/clickhouse/Glassflow-clickhouse-etl_1/screen3.png)
+![screen 3](/static/images/clickhouse/glassflow-clickhouse-etl_1/screen3.png)
 
 Next step is to setup the ClickHouse connection:
 
-![screen 4](/static/images/clickhouse/Glassflow-clickhouse-etl_1/screen4.png)
+![screen 4](/static/images/clickhouse/glassflow-clickhouse-etl_1/screen4.png)
 
 On the final step, select the database and the destination table as follows:
 
-![screen 5](/static/images/clickhouse/Glassflow-clickhouse-etl_1/screen5.png)
+![screen 5](/static/images/clickhouse/glassflow-clickhouse-etl_1/screen5.png)
 
 Once you saved the pipeline, then you can head to your ClickHouse play interface and query the logs:
 
-![screen 6](/static/images/clickhouse/Glassflow-clickhouse-etl_1/screen6.png)
+![screen 6](/static/images/clickhouse/glassflow-clickhouse-etl_1/screen6.png)
 
 As you see, it is quite easy to setup and use the UI to select and transform the data as per your need.
 
