@@ -1,6 +1,6 @@
 ---
 title: 'No-Code Clickhouse ETL with Glassflow - Join'
-date: 2025-07-02
+date: 2025-07-10
 tags:
   [
     'clickhouse',
@@ -22,7 +22,7 @@ summary: In this post, we explore how to enrich streaming logs in real time usin
 
 In modern logging pipelines, enriching logs with external data is essential for making them more meaningful and actionable.
 
-We have explored the following features of Glassflow's ClickHouse ETL in our previous posts:
+We have already explored the following features of Glassflow's ClickHouse ETL in our previous posts:
 
 - [Ingestion](./clickhouse-etl-with-glassflow)
 - [Deduplication](./clickhouse-etl-glassflow-dedup)
@@ -93,40 +93,40 @@ new_record["user_id"] = (counter % 3 == 0) and "user123" or "user456"
 
 - Once the docker compose is up sucessfully, open [http://localhost:8080](http://localhost:8080) in your browser and select `Join` button from the Welcome screen:
 
-![screen 1](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen1.png)
+![screen 1](/static/images/clickhouse/glassflow-clickhouse-etl_3/screen1.png)
 
 - Setup Kafka connection details as follows:
 
-![screen 2](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen2.png)
+![screen 2](/static/images/clickhouse/glassflow-clickhouse-etl_3/screen2.png)
 
 - Select the Left Kafka topic where the logs are produced:
 
-![screen 3](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen3.png)
+![screen 3](/static/images/clickhouse/glassflow-clickhouse-etl_3/screen3.png)
 
 - Select the Right Kafka topic where the user details are produced:
 
-![screen 4](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen4.png)
+![screen 4](/static/images/clickhouse/glassflow-clickhouse-etl_3/screen4.png)
 
 - Now, select the join key, in our case it is `user_id` and the join time window, let's set it as 1 minute:
 
-![screen 5](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen5.png)
+![screen 5](/static/images/clickhouse/glassflow-clickhouse-etl_3/screen5.png)
 
 - Now setup a ClickHouse connection details. Please remember to create a table schema before doing this.
 
-![screen 6](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen6.png)
+![screen 6](/static/images/clickhouse/glassflow-clickhouse-etl_3/screen6.png)
 
 - Select the target database and table to where the logs must be ingested at this stage.
 - Map the left / right topic keys to the appropriate column names in ClickHouse.
 
-![screen 7](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen7.png)
+![screen 7](/static/images/clickhouse/glassflow-clickhouse-etl_3/screen7.png)
 
 - Finally, your pipeline is active and wait for at least 1 minute or 100 events to be batched as per our configuration to insert into ClickHouse.
 
-![screen 8](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen8.png)
+![screen 8](/static/images/clickhouse/glassflow-clickhouse-etl_3/screen8.png)
 
 - After few inserts, now you can query from Clickhouse and view the enriched logs as follows:
 
-![screen 9](/static/images/clickhouse/Glassflow-clickhouse-etl_3/screen9.png)
+![screen 9](/static/images/clickhouse/glassflow-clickhouse-etl_3/screen9.png)
 
 ## 🔍 Under the Hood
 
@@ -146,3 +146,7 @@ Benefits include:
 ## 📌 Final Thoughts
 
 Glassflow's streaming JOIN feature bridges the gap between raw logs and enriched analytics. By joining streams upstream, you reduce complexity, improve performance, and enable real-time observability with minimal overhead.
+
+Adding Glassflow to your data pipeline stack is definitely a breeze and saves lots of time on reinventing consumer and helps to focus on Clickhouse's user query performance.
+
+How are you managing your Observability pipeline today? Share your experience with me on the comments section and let me know your thoughts / feedback about my articles.
