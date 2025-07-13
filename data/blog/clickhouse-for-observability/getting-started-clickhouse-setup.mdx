@@ -1,0 +1,110 @@
+---
+title: 'Part 2 - Getting Started: Setting Up ClickHouse for Observability'
+date: 2025-07-13
+tags:
+  [
+    'clickhouse',
+    'observability',
+    'logs',
+    'metrics',
+    'traces',
+    'opentelemetry',
+    'fluentbit',
+    'kafka',
+  ]
+draft: false
+summary: Learn how to set up ClickHouse for observability workloads using Docker. This post walks through installation, key configs, and best practices for log ingestion.
+---
+
+## Introduction
+
+In our [previous post](./rethinking-observability-with-clickhouse), we explored why ClickHouse is a powerful choice for observability. Now it's time to get hands-on. This post guides you through setting up ClickHouse from scratch using Docker, with a focus on preparing it for high-throughput log ingestion.
+
+Whether you're experimenting locally or laying the foundation for a multi-node deployment, this setup provides a reliable starting point.
+
+---
+
+## Deployment Options
+
+ClickHouse supports several [deployment options](https://clickhouse.com/docs/install) depending on your environment and goals:
+
+| Method               | Best Use Case                                                                                                                          |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Binary (.tar.gz)** | Bare metal servers with full control                                                                                                   |
+| **Docker**           | Quick local setup and dev testing                                                                                                      |
+| **Kubernetes**       | Scalable production environments from [Altinity Kubernetes Operator](https://altinity.com/kubernetes-operator/)                        |
+| **Cloud Services**   | Fully managed setup via [ClickHouse Cloud](https://clickhouse.com/cloud) or [Altinity.Cloud](https://altinity.com/managed-clickhouse/) |
+
+For this guide, we’ll focus on Docker, which is fast to set up and ideal for development and prototyping.
+
+---
+
+## Running ClickHouse via Docker Compose
+
+Inspired from ClickHouse's Example [repo](https://github.com/ClickHouse/examples/tree/main/docker-compose-recipes/recipes/ch-1S_1K), created the following [repo](https://github.com/email2vimalraj/log-pipeline-e2e-clickhouse) for the full e2e setup.
+
+Assuming you have a docker setup, once you cloned the [repository](https://github.com/email2vimalraj/log-pipeline-e2e-clickhouse), just run:
+
+```bash
+docker compose up -d
+```
+
+The above will setup two services:
+
+- ClickHouse Server with 1 Shard and 1 Replica
+- ClickHouse Keeper
+
+Once the docker compose is up and running, you can access ClickHouse Play Interface through [http://localhost:8123/play](http://localhost:8123/play).
+
+- `8123`: HTTP Interface
+- `9000`: ClickHouse Natvie Protocol port
+
+## Sanity Check: Insert and Query Logs
+
+Load up the play interface and try this:
+
+```sql
+CREATE TABLE test_logs (
+  timestamp DateTime,
+  message String
+) ENGINE = MergeTree
+ORDER BY timestamp;
+
+INSERT INTO test_logs VALUES (now(), 'Service started');
+
+SELECT * FROM test_logs ORDER BY timestamp DESC;
+```
+
+This validates that ingestion and querying are working as expected.
+
+## Monitoring ClickHouse Health
+
+ClickHouse exposes system-level observability via:
+
+- System tables like `system.metrics`, `system.events`, `system.parts`.
+- /ping and /metrics endpoints
+- Integration with Prometheus
+
+Example:
+
+```sql
+SELECT * FROM system.metrics WHERE value > 0;
+```
+
+In later posts, we’ll cover how to integrate these metrics into dashboards.
+
+## What's Next?
+
+You now have a ClickHouse instance running and ready to ingest logs. In the next post, we'll build a production-grade ingestion pipeline using:
+
+- Fluent Bit / Splunk Universal Forwarder
+- OpenTelemetry Collector
+- Kafka (optional but recommended)
+
+Our architecture / workflow is going to be like this:
+
+![ClickHouse Workflow Diagram](/static/images/clickhouse/clickhouse-for-observability/Clickhouse_Workflow.png)
+
+We’ll also explore schema design for log data that balances performance, compression, and query speed.
+
+Stay tuned for the next part in the series and do share your feedback / ask any questions below in the comments section.
